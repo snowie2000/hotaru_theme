@@ -6,17 +6,19 @@
         </div>
       </div>
     </td>
-    <td>{{ server.name }}</td>
+    <td>{{ server.alias ?? server.name }}</td>
     <td>{{ server.type }}</td>
-    <td>{{ server.location }}</td>
+    <td>
+      <Flag :flag="server.location" />
+    </td>
     <td>{{ server.uptime || '–' }}</td>
-    <td>{{ getStatus ? server.load : '-' }}</td>
+    <td>{{ getStatus ? server.load_1 : '-' }}</td>
     <td>{{
         getStatus ? `${tableRowByteConvert(server.network_rx)} | ${tableRowByteConvert(server.network_tx)}` : '–'
       }}
     </td>
     <td>{{
-        getStatus ? `${tableRowByteConvert(server.network_in)} | ${tableRowByteConvert(server.network_out)}` : '–'
+        getStatus ? `${tableRowByteConvert(server.network_in - server.last_network_in)} | ${tableRowByteConvert(server.network_out - server.last_network_out)}` : '–'
       }}
     </td>
     <td>
@@ -63,39 +65,43 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, PropType } from 'vue';
-import useStatus from './useStatus';
-import { StatusItem } from '@/types';
+import { defineComponent, ref, PropType } from "vue"
+import useStatus from "./useStatus"
+import { StatusItem } from "@/types"
+import Flag from "./Flag.vue"
 
 export default defineComponent({
-  name: 'TableItem',
+  name: "TableItem",
+  components: {
+    Flag,
+  },
   props: {
     server: {
       type: Object as PropType<StatusItem>,
-      default: () => ({})
-    }
+      default: () => ({}),
+    },
   },
   setup(props) {
-    const collapsed = ref(true);
-    const utils = useStatus(props);
+    const collapsed = ref(true)
+    const utils = useStatus(props)
+
     return {
       collapsed,
-      ...utils
-    };
-  }
-});
+      ...utils,
+    }
+  },
+})
 </script>
 
 <style scoped>
-
 tr.tableRow {
-  background-color: rgba(249, 249, 249, .8);
+  background-color: rgba(249, 249, 249, 0.8);
   vertical-align: middle;
 }
 
 tr.expandRow td > div {
   overflow: hidden;
-  transition: max-height .5s ease;
+  transition: max-height 0.5s ease;
   max-height: 4em;
 }
 
@@ -115,7 +121,7 @@ div.progress {
 div.progress div.bar {
   height: 25px;
   border-radius: 6px;
-  font-size: .9rem;
+  font-size: 0.9rem;
   line-height: 25px;
   color: white;
 }

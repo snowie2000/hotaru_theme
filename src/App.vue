@@ -4,7 +4,7 @@
   <div class="container">
     <servers-table :servers="servers"/>
     <update-time :updated="updated"/>
-    <servers-card :servers="servers"/>
+    <servers-card :servers="servers" v-if="card"/>
   </div>
   <the-footer/>
 </template>
@@ -34,7 +34,7 @@ export default defineComponent({
   setup() {
     const servers = ref<Array<StatusItem | BoxItem>>();
     const updated = ref<number>();
-    const { interval } = window.__PRE_CONFIG__;
+    const { interval, card } = window.__PRE_CONFIG__;
     let timer: number;
     const runFetch = () => axios.get('json/stats.json')
       .then(res => {
@@ -46,7 +46,8 @@ export default defineComponent({
     onBeforeUnmount(() => clearInterval(timer));
     return {
       servers,
-      updated
+      updated,
+      card
     };
   }
 });

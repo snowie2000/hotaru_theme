@@ -2,10 +2,8 @@
   <div class="column">
     <div class="ui fluid card">
       <div class="card-header">
-        <svg viewBox="0 0 100 100" class="flag-icon">
-          <use :xlink:href="`#${server.region}`"></use>
-        </svg>
-        <span> {{ server.name }} </span>
+        <Flag :flag="server.location" class="flag-icon" />
+        <span> {{ server.alias ?? server.name }} </span>
         <p>{{ server.type }}</p>
       </div>
       <div class="ui tiny progress success">
@@ -14,7 +12,7 @@
       </div>
       <div class="card-content">
         <p>Network: {{ `${tableRowByteConvert(server.network_rx)} | ${tableRowByteConvert(server.network_tx)}` }}</p>
-        <p>负载状态: {{ typeof server.load !== 'undefined' ? server.load : 'Offline' }}</p>
+        <p>负载状态: {{ typeof server.load_1 !== 'undefined' ? server.load_1 : 'Offline' }}</p>
       </div>
     </div>
   </div>
@@ -24,6 +22,7 @@
 import { defineComponent, PropType } from 'vue';
 import useStatus from './useStatus';
 import { StatusItem } from '@/types';
+import Flag from "./Flag.vue"
 
 export default defineComponent({
   name: 'CardItem',
@@ -32,6 +31,9 @@ export default defineComponent({
       type: Object as PropType<StatusItem>,
       default: () => ({})
     }
+  },
+  components: {
+    Flag
   },
   setup(props) {
     const { getStatus, getRAMStatus, tableRowByteConvert } = useStatus(props);
@@ -73,7 +75,7 @@ div.card div.progress {
 .flag-icon {
   display: inline;
   vertical-align: middle;
-  width: 70px;
+  width: 32px;
   margin-right: 8px;
 }
 </style>
